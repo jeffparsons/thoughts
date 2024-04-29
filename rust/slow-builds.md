@@ -39,7 +39,7 @@ Per https://doc.rust-lang.org/reference/linkage.html.
 
 This seems to be uncommon in the Rust community. But maybe that's just because when people have use cases for this they aren't the kind of use cases they talk about much publicly?
 
-TODO: Look into whether dylibs or rlibs could be helpful when you know you're using the same compiler version on the same platform, etc. -- what is the experience actually like?
+TODO: Look into whether dylibs or rlibs could be helpful when you know you're using the same compiler version on the same platform, etc. -- what is the experience actually like? I think Cargo doesn't actually have any support for linking to rlibs explicitly; it [expects to build everything from source](https://stackoverflow.com/questions/75295758/rust-libraries-with-cargo-rlib)?
 
 TODO: Look into whether there's any reason to use a cdylib over a dylib if you know you're using the same compiler version.
 
@@ -55,13 +55,29 @@ Incremental builds can often spend a significant amount of time in linking. Usin
 
 ## Future solutions
 
-TODO: Flesh this out with links and details.
+### Make sccache play better with dev environments
 
-- Better sccache support
-- First-class cargo hooks for whatever build sharing solutions you want. (I think there's an RFC for something like this, or comments on an issue somewhere.)
-- Better support for dynamic linking:
-  - crABI
-  - `#[export]`
-- Better cross-compilation
-  - Hard to do because Apple doesn't want you to cross-compile to macOS.
-- Wasm Components becoming more capable
+Make it understand relative paths.
+
+### Shared compilation cache for Cargo
+
+[Cargo issue 5931](https://github.com/rust-lang/cargo/issues/5931) has lots of thoughts about local shared compilation caches. Of particular interest:
+
+- [epage's design sketch](https://github.com/rust-lang/cargo/issues/5931#issuecomment-1551478767), which includes consideration of garbage collection.
+- [RobJellinghaus's comment](https://github.com/rust-lang/cargo/issues/5931#issuecomment-1947491412) about an internal Microsoft hackathon where they prototyped some of this stuff.
+
+### Better support for dynamic linking in Rust
+
+The [crABI RFC](https://github.com/joshtriplett/rfcs/blob/crabi-v1/text/3470-crabi-v1.md) describes an opt-in stable ABI.
+
+The [`#[export]` attribute](https://github.com/m-ou-se/rfcs/blob/export/text/0000-export.md) RFC describes a mechanism to better support dynamic linking, and remarks that it would [allow not building the whole upstream crate](https://github.com/m-ou-se/rfcs/blob/export/text/0000-export.md#building-dynamic-dependencies).
+
+### Better cross-compilation
+
+It would be nice to be able to target macOS from Linux build hosts, but the current ways of doing this are not great. Current solutions require using bootlegged macOS SDKs (which I will not link here) and I have run into spooky crashes in the resulting binaries.
+
+This is unlikely to improve because Apple doesn't want you to cross-compile to macOS.
+
+### Wasm Components mature
+
+Wait for Wasm Components to evolve and stabilise, and for more libraries to be available as Components. E.g. it seems likely that AWS will eventually publish Wasm Components for the AWS SDK, at which point it becomes unnecessary to compile the enormous `aws-sdk-ec2` crate yourself.
