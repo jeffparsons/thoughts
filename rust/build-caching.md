@@ -2,7 +2,7 @@
 
 [Rust builds are slow](slow-builds.md), and they take up a lot of disk space.
 
-One way to mitigate this is through build caching.
+One way to mitigate this is through sharing of build artifacts between projects, either locally or also across multiple machines.
 
 TODO: more of BLUF
 
