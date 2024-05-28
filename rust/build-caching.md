@@ -4,11 +4,25 @@
 
 One way to mitigate this is through build caching.
 
+TODO: more of BLUF
+
+## Solutions available today
+
 The main solution that exists for this today is [sccache](https://github.com/mozilla/sccache), but it has limitations like [caching based on absolute paths](https://github.com/mozilla/sccache/issues/35) that make it ill-suited for use in development environments. My understanding is that these limitations exist primarily because sccache is used with Rust purely as a [`rustc` wrapper](https://doc.rust-lang.org/cargo/reference/config.html#buildrustc-wrapper) and therefore can not benefit from any of the richer information that Cargo has available.
+
+todo: bullet point specific limitations
+
+## Future opportunities
 
 There has long been discussion (todo: add link) of adding some kind of support for shared build caches to Cargo itself. Within this discussion, there appear to be two main camps advocating for two very different approaches: 
 
 The first camp, which includes Cargo team members (todo: which? is there actually consensus?) advocates for building first class support for build caching into Cargo itself, including tracking artifacts across multiple projects, cleaning up, and eventually interfacing with third party caches through some kind of plugin system. Some of the main arguments for this approach are that it will provide a comprehensive solution out of the box and therefore benefit more people, and that the hard parts will be needed to support `cargo script` anyway (todo: links) so we might as well.
+
+The other camp advocates for defining a narrow interface and offloading the rest of the implementation work to the surrounding ecosystem. Benefits include getting something up and running quickly, and allowing for experimentation outside of Cargo itself, which is understaffed and is also for good reasons relatively conservative. Given that a plugin system is a fairly late priority (todo: citation needed) for the "first class support" option, it may be years before something is available to integrate with third party solutions.
+
+I will explore both options here and describe my interpretation of what a solution might look like, because I am sympathetic to both approaches. I wonder if we could have our cake and eat it, too, without making a complicated mess. todo: substantiate this.
+
+Todo: maybe insert a section here about general challenges before diving into specifics of each approach.
 
 ## Unordered thoughts
 
