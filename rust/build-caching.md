@@ -1,10 +1,14 @@
 # Rust build caching
 
-[Rust builds are slow](slow-builds.md).
+[Rust builds are slow](slow-builds.md), and they take up a lot of disk space.
 
 One way to mitigate this is through build caching.
 
-The main solution that exists for this today is [sccache](https://github.com/mozilla/sccache), but it has limitations like [caching based on absolute paths](https://github.com/mozilla/sccache/issues/35) that make it ill-suited for use in development environments. My understanding is that these limitations exist primarily because sccache is used as a [`rustc` wrapper](https://doc.rust-lang.org/cargo/reference/config.html#buildrustc-wrapper) and therefore does not benefit from any of the higher-level project information that Cargo has available.
+The main solution that exists for this today is [sccache](https://github.com/mozilla/sccache), but it has limitations like [caching based on absolute paths](https://github.com/mozilla/sccache/issues/35) that make it ill-suited for use in development environments. My understanding is that these limitations exist primarily because sccache is used with Rust purely as a [`rustc` wrapper](https://doc.rust-lang.org/cargo/reference/config.html#buildrustc-wrapper) and therefore can not benefit from any of the richer information that Cargo has available.
+
+There has long been discussion (todo: add link) of adding some kind of support for shared build caches to Cargo itself. Within this discussion, there appear to be two main camps advocating for two very different approaches: 
+
+The first camp, which includes Cargo team members (todo: which? is there actually consensus?) advocates for building first class support for build caching into Cargo itself, including tracking artifacts across multiple projects, cleaning up, and eventually interfacing with third party caches through some kind of plugin system. Some of the main arguments for this approach are that it will provide a comprehensive solution out of the box and therefore benefit more people, and that the hard parts will be needed to support `cargo script` anyway (todo: links) so we might as well.
 
 ## Unordered thoughts
 
