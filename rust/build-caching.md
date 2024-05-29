@@ -16,6 +16,20 @@ Finally, I will offer my opinion on what should be done next.
 Please note that I do not actually have any experience working on Cargo, so the rest of this document likely contains errors and misconceptions.
 I appreciate any corrections or comments.
 
+## Fingerprints hash mtime, not source text
+
+[Fingerprints](https://doc.rust-lang.org/nightly/nightly-rustc/cargo/core/compiler/fingerprint/index.html) are digests that include most of the inputs to a compilation unit.
+To allow determining whether a compilation unit is _fresh_, fingerprints include the _mtime_ of source files, such that any modification of a source file will result in the new fingerprint no longer matching the compiled unit.
+
+This is suitable for their current purpose, but is inadequate for use with a general _shared_ build cache.
+
+TODO:
+
+- algorithm (notes on this below) for generating a complete unique digest.
+  - I'm not proposing that the other concepts should be thrown out -- just that we need a complete cache key for any compiled unit, and that it can not include mtime.
+- mtime can still be used...
+- todo: note that we can just ignore this problem for registry packages, because they don't change. but that it should be considered up-front if it affects any interface.
+
 # General challenges
 
 Regardless of the approach taken ("implementation first" or "interface first"), there are a few general challenges:
@@ -23,8 +37,6 @@ Regardless of the approach taken ("implementation first" or "interface first"), 
 - TODO: discuss content hashing, input file discovery, mtimes.
 
 ## Future opportunities
-
-There has long been discussion (todo: add link) of adding some kind of support for shared build caches to Cargo itself. Within this discussion, there appear to be two main camps advocating for two very different approaches:
 
 The first camp, which includes Cargo team members (todo: which? is there actually consensus?) advocates for building first class support for build caching into Cargo itself, including tracking artifacts across multiple projects, cleaning up, and eventually interfacing with third party caches through some kind of plugin system. Some of the main arguments for this approach are that it will provide a comprehensive solution out of the box and therefore benefit more people, and that the hard parts will be needed to support `cargo script` anyway (todo: links) so we might as well.
 
