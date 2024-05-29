@@ -4,11 +4,13 @@
 
 One way to mitigate this is to share build artifacts between projects, either locally on one machine or even across multiple machines.
 
-The main solution that exists for this today is [sccache](https://github.com/mozilla/sccache), which wraps compilers like rustc to cache their outputs. This approach is convenient in that it requires [very little cooperation from the Rust toolchain] (https://doc.rust-lang.org/cargo/reference/config.html#buildrustc-wrapper). However, it is for this same reason also limited in that it can not make use of the richer context that Cargo has about a build job.
+The main solution that exists for this today is [sccache](https://github.com/mozilla/sccache), which wraps compilers like rustc to cache their outputs. This approach is convenient in that it requires [very little cooperation from the Rust toolchain](https://doc.rust-lang.org/cargo/reference/config.html#buildrustc-wrapper). However, it is for this same reason also limited in that it can not make use of the richer context that Cargo has about a build job.
 
-There is appetite in the Cargo team and the Rust user community at large for [some kind of first party support for shared build caches in Cargo itself](https://github.com/rust-lang/cargo/issues/5931). But of course the devil is in the details, and there are differing opinions on what shape that support should take. In particular, some people advocate for building an end-to-end solution within Cargo itself so that a complete solution is available out-of-the-box, while others would prefer that Cargo defines a narrow interface for integrating with external caching solutions, and leave the implementation details up to the community.
+There is appetite in the Cargo team and the Rust user community at large for [some kind of first party support for shared build caches in Cargo itself](https://github.com/rust-lang/cargo/issues/5931), but there are also differing opinions on what shape that support should take.
 
-Please note that I do not actually have any experience working on Cargo, so the rest of this document likely contains errors and misunderstandings. I would appreciate any corrections or comments. 🙏
+First I will explore some details that are relevant regardless of the specific approach taken. Then I will attempt to fairly summarise my understanding of each of the main schools of thought I have seen in discussions (Zulip, GitHub issues) so day, and then finally I will offer my opinion on what should be done next.
+
+Please note that I do not actually have any experience working on Cargo, so the rest of this document likely contains errors and misconceptions. I appreciate any corrections or comments.
 
 # General challenges
 
