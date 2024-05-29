@@ -21,7 +21,13 @@ I appreciate any corrections or comments.
 [Fingerprints](https://doc.rust-lang.org/nightly/nightly-rustc/cargo/core/compiler/fingerprint/index.html) are digests that include most of the inputs to a compilation unit.
 To allow determining whether a compilation unit is _fresh_, fingerprints include the _mtime_ of source files, such that any modification of a source file will result in the new fingerprint no longer matching the compiled unit.
 
-This is suitable for their current purpose, but is inadequate for use with a general _shared_ build cache.
+This formulation of fingerprints is suitable for their current purpose, but is inadequate for use with a _shared_ build cache.
+If two copies of the same source exist on one machine, or many copies exist across many machines, then any hash that does not include file content will not be able to produce cache hits.
+
+One answer to this is to (at least initially) only cache build artifacts for packages that come from immutable sources, e.g., crates.io.
+A given version of a package from crates.io will always have the same source code, so there is no need to consider file content _or_ mtimes for these packages; a hash of the name, version, and origin is enough.
+
+I do however think it is worth at least considering how to address this issue for _all_ units, even if an initial implementation embraces some pragmatic limitations.
 
 TODO:
 
