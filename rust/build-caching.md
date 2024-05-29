@@ -1,16 +1,20 @@
 # Rust build caching
 
 [Rust builds are slow](slow-builds.md), and they take up a lot of disk space.
-
 One way to mitigate this is to share build artifacts between projects, either locally on one machine or even across multiple machines.
 
-The main solution that exists for this today is [sccache](https://github.com/mozilla/sccache), which wraps compilers like rustc to cache their outputs. This approach is convenient in that it requires [very little cooperation from the Rust toolchain](https://doc.rust-lang.org/cargo/reference/config.html#buildrustc-wrapper). However, it is for this same reason also limited in that it can not make use of the richer context that Cargo has about a build job.
+The main implementation of this idea that exists today is [sccache](https://github.com/mozilla/sccache), which wraps compilers like rustc to cache their outputs.
+This approach is convenient in that it requires [very little cooperation from the Rust toolchain](https://doc.rust-lang.org/cargo/reference/config.html#buildrustc-wrapper).
+However, for this same reason it is also limited in that it can not make use of the richer context that Cargo has about a build job.
 
-There is appetite in the Cargo team and the Rust user community at large for [some kind of first party support for shared build caches in Cargo itself](https://github.com/rust-lang/cargo/issues/5931), but there are also differing opinions on what shape that support should take.
+There is appetite in the Cargo team and the Rust user community at large for [some kind of first party support for shared build caches in Cargo itself](https://github.com/rust-lang/cargo/issues/5931), but there are differing opinions on what shape that support should take -- in particular, whether Cargo should offer a self-contained solution, or whether it should instead define an interface for calling out to external caching implementations.
 
-First I will explore some details that are relevant regardless of the specific approach taken. Then I will attempt to fairly summarise my understanding of each of the main schools of thought I have seen in discussions (Zulip, GitHub issues) so day, and then finally I will offer my opinion on what should be done next.
+I will first explore some details that are relevant regardless of the specific approach taken.
+Then I will attempt[^1] to impartially summarise my understanding of each of the main schools of thought I have seen in discussions (Zulip, GitHub issues) so far.
+Finally, I will offer my opinion on what should be done next.
 
-Please note that I do not actually have any experience working on Cargo, so the rest of this document likely contains errors and misconceptions. I appreciate any corrections or comments.
+Please note that I do not actually have any experience working on Cargo, so the rest of this document likely contains errors and misconceptions.
+I appreciate any corrections or comments.
 
 # General challenges
 
@@ -50,3 +54,5 @@ TODO: Turn these into prose.
   - Input to "I built a thing" is again the hashes (same as above), and map of file paths. They are only guaranteed to exist until your program exits!!!!!
   - Output of "I built a thing" is... well... I guess nothing? Oh, maybe optionally "I relocated this to **\_\_**". That would be nifty. Write up a justification for this.
 - Should "monolithic dependency blob dealie" be part of this? It would be good to at least consider it to make sure this design doesn't make it harder.
+
+[^1]: At the same time acknowledging that this is impossible, and that I am unavoidably biased.
